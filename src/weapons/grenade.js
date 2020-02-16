@@ -10,6 +10,7 @@ export default function Grenade(ctx) {
   this.blowSound = new Audio("audio/grenade.mp3")
   this.fireSound = new Audio("audio/grenadeThrow.mp3")
   this.takeSound = new Audio("audio/grenadeTake.mp3")
+  this.hitSound = new Audio("audio/grenadeHit.mp3")
   this.image = new Image()
   this.frame = 0;
   this.image.src = "img/grenade.png"

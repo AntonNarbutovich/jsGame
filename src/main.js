@@ -4,6 +4,7 @@ import Door from "./components/door.js"
 import Window from "./components/window.js"
 import WeaponGenerator from "./components/weaponGenerator.js"
 import BonusGenerator from "./components/bonusGenerator.js"
+import Trampoline from "./components/trampoline.js"
 import Grenade from "./weapons/grenade.js"
 import {gravity, bulletSpeed} from "./values.js"
 
@@ -15,6 +16,7 @@ let doors = []
 let weaponGenerators = []
 let windows = []
 let bonusGenerators = []
+let trampolins = []
 
 const cvs = document.getElementById("game")
 const ctx = cvs.getContext("2d")
@@ -29,8 +31,10 @@ obstacles.push(new Wall(1300, 550, 100, 50, ctx))
 obstacles.push(new Wall(1300, 420, 100, 50, ctx))
 obstacles.push(new Wall(1470, 480, 40, 30, ctx))
 
-obstacles.push(new Wall(100, 400, 30, 200, ctx))
+obstacles.push(new Wall(100, 100, 30, 60, ctx))
+obstacles.push(new Wall(100, 200, 30, 400, ctx))
 obstacles.push(new Wall(100, 535, 80, 10, ctx))
+obstacles.push(new Wall(100, 410, 80, 10, ctx))
 obstacles.push(new Wall(250, 500, 50, 10, ctx))
 obstacles.push(new Wall(280, 450, 50, 10, ctx))
 obstacles.push(new Wall(100, 400, 30, 200, ctx))
@@ -41,7 +45,15 @@ obstacles.push(new Wall(400, 450, 230, 30, ctx))
 obstacles.push(new Wall(700, 450, 270, 30, ctx))
 
 obstacles.push(new Wall(300, 390, 70, 30, ctx))
-obstacles.push(new Wall(400, 325, 500, 10, ctx))
+obstacles.push(new Wall(400, 325, 650, 10, ctx))
+obstacles.push(new Wall(1150, 325, 400, 10, ctx))
+obstacles.push(new Wall(1400, 290, 150, 35, ctx))
+obstacles.push(new Wall(1450, 255, 100, 35, ctx))
+obstacles.push(new Wall(800, 200, 600, 10, ctx))
+obstacles.push(new Wall(1250, 200, 10, 85, ctx))
+obstacles.push(new Wall(470, 260, 30, 10, ctx))
+obstacles.push(new Wall(200, 200, 230, 10, ctx))
+
 obstacles.push(new Wall(500, 200, 320, 10, ctx))
 obstacles.push(new Wall(500, 200, 30, 70, ctx))
 obstacles.push(new Wall(790, 200, 30, 70, ctx))
@@ -49,23 +61,51 @@ obstacles.push(new Wall(630, 300, 60, 30, ctx))
 
 obstacles.push(new Wall(300, 200, 30, 150, ctx))
 
+obstacles.push(new Wall(500, 50, 300, 10, ctx))
+obstacles.push(new Wall(500, 0, 10, 120, ctx))
+obstacles.push(new Wall(600, 0, 10, 120, ctx))
+obstacles.push(new Wall(700, 0, 10, 120, ctx))
+obstacles.push(new Wall(800, 0, 10, 120, ctx))
+
+obstacles.push(new Wall(1100, 0, 10, 150, ctx))
+
+
 
 doors.push(new Door(310, 545, ctx))
 
 doors.push(new Door(510, 270, ctx))
 doors.push(new Door(800, 270, ctx))
 
-windows.push(new Window(1300, 510, ctx))
+doors.push(new Door(1100, 145, ctx))
+
+
+windows.push(new Window(100, 160, ctx))
 windows.push(new Window(1300, 470, ctx))
+windows.push(new Window(1300, 510, ctx))
 windows.push(new Window(300, 350, ctx))
 
+windows.push(new Window(500, 160, ctx))
+windows.push(new Window(600, 160, ctx))
+windows.push(new Window(700, 160, ctx))
+windows.push(new Window(800, 160, ctx))
+windows.push(new Window(500, 120, ctx))
+windows.push(new Window(600, 120, ctx))
+windows.push(new Window(700, 120, ctx))
+windows.push(new Window(800, 120, ctx))
 
 
 weaponGenerators.push(new WeaponGenerator(800, 590, ctx))
 weaponGenerators.push(new WeaponGenerator(500, 440, ctx))
 weaponGenerators.push(new WeaponGenerator(640, 290, ctx))
+weaponGenerators.push(new WeaponGenerator(1150, 190, ctx))
 
+
+bonusGenerators.push(new BonusGenerator(640, 190, ctx))
 bonusGenerators.push(new BonusGenerator(1400, 590, ctx))
+
+trampolins.push(new Trampoline(1075, 490, ctx))
+trampolins.push(new Trampoline(130, 400, ctx))
+
 
 document.addEventListener('keydown', function (e) {
   pressedKeys[e.keyCode] = true;
@@ -86,7 +126,7 @@ function movePlayer(){
     player.layDown()
   } else if(player.isDown){
     player.stayUp()
-    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows)){
+    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins)){
       if(player.intersects(obstacle)){
         player.y += 20
         player.layDown()
@@ -94,7 +134,7 @@ function movePlayer(){
     }
   }
 
-  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows)){
+  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins)){
     if(player.intersects(obstacle)){
       if(player.horizontalDirection == 'Left'){
         player.x = obstacle.x + obstacle.width
@@ -119,7 +159,7 @@ function movePlayer(){
     player.y -= player.speedY;
   }
 
-  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows)){
+  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins)){
     if(player.intersects(obstacle)){
       if(player.verticalDirection == 'Up'){
         player.y = obstacle.y + obstacle.height
@@ -144,7 +184,7 @@ function movePlayer2(){
     player2.layDown()
   } else if(player2.isDown){
     player2.stayUp()
-    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows)){
+    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins)){
       if(player2.intersects(obstacle)){
         player2.y += 20
         player2.layDown()
@@ -152,7 +192,7 @@ function movePlayer2(){
     }
   }
 
-  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows)){
+  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins)){
     if(player2.intersects(obstacle)){
       if(player2.horizontalDirection == 'Left'){
         player2.x = obstacle.x + obstacle.width
@@ -177,7 +217,7 @@ function movePlayer2(){
     player2.y -= player2.speedY;
   }
 
-  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows)){
+  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins)){
     if(player2.intersects(obstacle)){
       if(player2.verticalDirection == 'Up'){
         console.log("up")
@@ -268,12 +308,28 @@ function checkBonusesCollisions(){
   }
 }
 
+function checkTrampolineCollisions(){
+  for(let i = 0; i < trampolins.length; i++){
+    if(trampolins[i].stands(player)){
+      trampolins[i].sound.play()
+      player.speedY = trampolins[i].stregth
+      player.y -= player.speedY
+    }
+    if(trampolins[i].stands(player2)){
+      trampolins[i].sound.play()
+      player2.speedY = trampolins[i].stregth
+      player2.y -= player2.speedY
+    }
+  }
+}
+
 function checkGrenadesCollisions(){
   for(let i = 0; i < grenades.length; i++){
     grenades[i].x += grenades[i].speedX
 
     for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators)){
       if(grenades[i].intersects(obstacle)){
+        grenades[i].hitSound.play()
         grenades[i].speedX = -grenades[i].speedX/2
         grenades[i].x += grenades[i].speedX
         break;
@@ -284,6 +340,7 @@ function checkGrenadesCollisions(){
 
     for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators)){
       if(grenades[i].intersects(obstacle)){
+        grenades[i].hitSound.play()
         grenades[i].speedY = -grenades[i].speedY/2
         grenades[i].y += grenades[i].speedY
         break;
@@ -292,6 +349,7 @@ function checkGrenadesCollisions(){
 
     for(let door of doors){
       if(grenades[i].intersects(door) && door.mode == 'closed'){
+        grenades[i].hitSound.play()
         grenades[i].speedX = -grenades[i].speedX/2
         grenades[i].x += grenades[i].speedX
       }
@@ -347,6 +405,7 @@ function updateGameArea() {
   checkWeaponGeneratorCollisions()
   checkBonusesCollisions()
   checkGrenadesCollisions()
+  checkTrampolineCollisions()
 
   if(player.x + player.width < 0 || player.x > cvs.width || player.y + player.height < 0 || player.y > cvs.height){
     stop(2)
@@ -362,6 +421,7 @@ function updateGameArea() {
   grenades.forEach(g => g.update());
   weaponGenerators.forEach(w => w.update());
   bonusGenerators.forEach(b => b.update());
+  trampolins.forEach(t => t.update());
   player.update()
   player2.update()
 
