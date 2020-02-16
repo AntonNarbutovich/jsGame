@@ -214,6 +214,7 @@ function checkBulletCollisions(){
 
     if(bullet.intersects(player)){
       player.health -= bullet.damage;
+      player.hitSound.play()
       bullets.splice(i, 1)
       if(player.health <= 0){
         stop(2)
@@ -221,6 +222,7 @@ function checkBulletCollisions(){
     }
     if(bullet.intersects(player2)){
       player2.health -= bullet.damage;
+      player2.hitSound.play()
       bullets.splice(i, 1)
       if(player2.health <= 0){
         stop(1)

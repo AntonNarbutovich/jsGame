@@ -10,6 +10,8 @@ export default function Player(x, y, ctx) {
   this.health = 5;
   this.jumpAllowed = true;
   this.horizontalDirection = 'Right'
+  this.hitSound = new Audio("audio/hit.mp3")
+  this.hitSound.volume = 0.2
   this.weapon = null;
   this.isDown = false
   this.x = x;
