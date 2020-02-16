@@ -1,5 +1,5 @@
-import {gravity, bulletSpeed} from "/src/values.js"
-import Bullet from "/src/components/bullet.js"
+import {gravity, bulletSpeed} from "../values.js"
+import Bullet from "./bullet.js"
 
 export default function Player(x, y, ctx) {
   this.width = 30;

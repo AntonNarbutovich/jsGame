@@ -1,9 +1,9 @@
-import Player from "/src/components/player.js"
-import Wall from "/src/components/wall.js"
-import Door from "/src/components/door.js"
-import Window from "/src/components/window.js"
-import WeaponGenerator from "/src/components/weaponGenerator.js"
-import {gravity, bulletSpeed} from "/src/values.js"
+import Player from "./components/player.js"
+import Wall from "./components/wall.js"
+import Door from "./components/door.js"
+import Window from "./components/window.js"
+import WeaponGenerator from "./components/weaponGenerator.js"
+import {gravity, bulletSpeed} from "./values.js"
 
 let pressedKeys = []
 let obstacles = []

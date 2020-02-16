@@ -1,7 +1,7 @@
-import Gun from '/src/weapons/gun.js'
-import AssaultRifle from '/src/weapons/assaultRifle.js'
-import SniperRifle from '/src/weapons/sniperRifle.js'
-import {weaponChance}  from "/src/values.js"
+import Gun from '../weapons/gun.js'
+import AssaultRifle from '../weapons/assaultRifle.js'
+import SniperRifle from '../weapons/sniperRifle.js'
+import {weaponChance}  from "../values.js"
 
 export default function WeaponGenerator(x, y, ctx) {
   this.width = 40;

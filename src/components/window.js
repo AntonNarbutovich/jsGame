@@ -22,16 +22,6 @@ export default function Window(x, y, ctx) {
     } )
   }
 
-  // this.draw = function(a){
-  //   console.log(a)
-  //   this.image.src = "img/window" + this.frame + ".png"
-  //   ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-  //   this.frame++
-  //   if(this.frame <= 4){
-  //     requestAnimationFrame(this.draw)
-  //   }
-  // }
-
   this.intersects = function(obj){
     let leftSide = this.x
     let rightSide = this.x + this.width

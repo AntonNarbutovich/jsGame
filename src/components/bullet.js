@@ -1,4 +1,4 @@
-import {gravity, bulletSpeed} from "/src/values.js"
+import {gravity, bulletSpeed} from "../values.js"
 
 export default function Bullet(x, y, speed, damage, ctx) {
   this.width = 2;
