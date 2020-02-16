@@ -1,5 +1,6 @@
-import {gravity, bulletSpeed} from "../values.js"
+import {gravity, bulletSpeed, grenadeSpeed} from "../values.js"
 import Bullet from "./bullet.js"
+import Grenade from "../weapons/grenade.js"
 
 export default function Player(x, y, ctx) {
   this.width = 30;
@@ -49,12 +50,27 @@ export default function Player(x, y, ctx) {
         this.weapon.fireSound.play()
         this.weapon.ammo--
         let damage = this.weapon.damage
+        let grenade = this.weapon.grenade
         if(this.weapon.ammo == 0){
           this.weapon = null
         }
         if(this.horizontalDirection == 'Right'){
+          if(grenade){
+            let g = new Grenade(ctx)
+            g.x = this.x
+            g.y = this.y
+            g.speedX = grenadeSpeed
+            return g
+          }
           return new Bullet(this.x + this.width + 5, this.y + this.height/2, bulletSpeed, damage, ctx)
         } else {
+          if(grenade){
+            let g = new Grenade(ctx)
+            g.x = this.x
+            g.y = this.y
+            g.speedX = -grenadeSpeed
+            return g
+          }
           return new Bullet(this.x - 5, this.y + this.height/2, -bulletSpeed, damage, ctx)
         }
       }

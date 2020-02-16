@@ -4,11 +4,13 @@ import Door from "./components/door.js"
 import Window from "./components/window.js"
 import WeaponGenerator from "./components/weaponGenerator.js"
 import BonusGenerator from "./components/bonusGenerator.js"
+import Grenade from "./weapons/grenade.js"
 import {gravity, bulletSpeed} from "./values.js"
 
 let pressedKeys = []
 let obstacles = []
 let bullets = []
+let grenades = []
 let doors = []
 let weaponGenerators = []
 let windows = []
@@ -266,6 +268,44 @@ function checkBonusesCollisions(){
   }
 }
 
+function checkGrenadesCollisions(){
+  for(let i = 0; i < grenades.length; i++){
+    grenades[i].x += grenades[i].speedX
+
+    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators)){
+      if(grenades[i].intersects(obstacle)){
+        grenades[i].speedX = -grenades[i].speedX/2
+        grenades[i].x += grenades[i].speedX
+        break;
+      }
+    }
+
+    grenades[i].y += grenades[i].speedY
+
+    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators)){
+      if(grenades[i].intersects(obstacle)){
+        grenades[i].speedY = -grenades[i].speedY/2
+        grenades[i].y += grenades[i].speedY
+        break;
+      }
+    }
+
+    for(let door of doors){
+      if(grenades[i].intersects(door) && door.mode == 'closed'){
+        grenades[i].speedX = -grenades[i].speedX/2
+        grenades[i].x += grenades[i].speedX
+      }
+    }
+
+    for(let j = 0; j < windows.length; j++){
+      if(grenades[i].intersects(windows[j])){
+        windows[j].break()
+        windows.splice(j, 1)
+      }
+    }
+  }
+}
+
 function stop(num) {
   ctx.fillStyle = "black";
   ctx.font = "50px Arial";
@@ -283,14 +323,22 @@ function updateGameArea() {
   if(pressedKeys[32]){
     let bullet = player.fire()
     if(bullet){
-      bullets.push(bullet)
+      if(bullet.grenade){
+        grenades.push(bullet)
+      } else{
+        bullets.push(bullet)
+      }
     }
   }
 
   if(pressedKeys[16]){
     let bullet = player2.fire()
     if(bullet){
-      bullets.push(bullet)
+      if(bullet.grenade){
+        grenades.push(bullet)
+      } else{
+        bullets.push(bullet)
+      }
     }
   }
 
@@ -298,6 +346,7 @@ function updateGameArea() {
   checkDoorColissions()
   checkWeaponGeneratorCollisions()
   checkBonusesCollisions()
+  checkGrenadesCollisions()
 
   if(player.x + player.width < 0 || player.x > cvs.width || player.y + player.height < 0 || player.y > cvs.height){
     stop(2)
@@ -310,6 +359,7 @@ function updateGameArea() {
   obstacles.forEach(o => o.update());
   doors.forEach(d => d.update());
   windows.forEach(w => w.update());
+  grenades.forEach(g => g.update());
   weaponGenerators.forEach(w => w.update());
   bonusGenerators.forEach(b => b.update());
   player.update()
@@ -318,6 +368,35 @@ function updateGameArea() {
   for(let i = 0; i < Math.abs(bulletSpeed/5); i++){
     bullets.forEach(b => b.update(Math.sign(b.speedX)*5));
     checkBulletCollisions()
+  }
+
+  for(let i = 0; i < grenades.length; i++){
+    if(grenades[i].curBlowDelay >= grenades[i].blowDelay){
+      grenades[i].blow()
+
+      for(let j = 0; j < windows.length; j++){
+        if(windows[j].intersects(grenades[i].explosion)){
+          windows[j].break()
+          windows.splice(j, 1)
+        }
+      }
+
+      if(player.intersects(grenades[i].explosion)){
+        player.health -= grenades[i].damage;
+        player.hitSound.play()
+        if(player.health <= 0){
+          stop(2)
+        }
+      }
+      if(player2.intersects(grenades[i].explosion)){
+        player2.health -= grenades[i].damage;
+        player2.hitSound.play()
+        if(player2.health <= 0){
+          stop(1)
+        }
+      }
+      grenades.splice(i, 1)
+    }
   }
 
 }

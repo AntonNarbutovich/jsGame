@@ -1,6 +1,7 @@
 import Gun from '../weapons/gun.js'
 import AssaultRifle from '../weapons/assaultRifle.js'
 import SniperRifle from '../weapons/sniperRifle.js'
+import Grenade from '../weapons/grenade.js'
 import {weaponChance}  from "../values.js"
 
 export default function WeaponGenerator(x, y, ctx) {
@@ -55,6 +56,9 @@ export default function WeaponGenerator(x, y, ctx) {
     else if (num == 2){
      this.weapon = new SniperRifle()
    }
+   else if (num == 3){
+    this.weapon = new Grenade(ctx)
+  }
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
     if(this.weapon){
