@@ -29,6 +29,14 @@ export default function Player(x, y, ctx) {
     }
   }
 
+  this.takeBonus = function(generator){
+    if(generator.bonus){
+      generator.bonus.takeSound.play()
+      generator.bonus.activate(this)
+      generator.bonus = null
+    }
+  }
+
   this.fire = function(){
     if(this.weapon){
       if(!this.isDown){

@@ -3,6 +3,7 @@ import Wall from "./components/wall.js"
 import Door from "./components/door.js"
 import Window from "./components/window.js"
 import WeaponGenerator from "./components/weaponGenerator.js"
+import BonusGenerator from "./components/bonusGenerator.js"
 import {gravity, bulletSpeed} from "./values.js"
 
 let pressedKeys = []
@@ -11,6 +12,7 @@ let bullets = []
 let doors = []
 let weaponGenerators = []
 let windows = []
+let bonusGenerators = []
 
 const cvs = document.getElementById("game")
 const ctx = cvs.getContext("2d")
@@ -61,6 +63,7 @@ weaponGenerators.push(new WeaponGenerator(800, 590, ctx))
 weaponGenerators.push(new WeaponGenerator(500, 440, ctx))
 weaponGenerators.push(new WeaponGenerator(640, 290, ctx))
 
+bonusGenerators.push(new BonusGenerator(1400, 590, ctx))
 
 document.addEventListener('keydown', function (e) {
   pressedKeys[e.keyCode] = true;
@@ -81,7 +84,7 @@ function movePlayer(){
     player.layDown()
   } else if(player.isDown){
     player.stayUp()
-    for(let obstacle of obstacles.concat(weaponGenerators).concat(windows)){
+    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows)){
       if(player.intersects(obstacle)){
         player.y += 20
         player.layDown()
@@ -89,7 +92,7 @@ function movePlayer(){
     }
   }
 
-  for(let obstacle of obstacles.concat(weaponGenerators).concat(windows)){
+  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows)){
     if(player.intersects(obstacle)){
       if(player.horizontalDirection == 'Left'){
         player.x = obstacle.x + obstacle.width
@@ -114,7 +117,7 @@ function movePlayer(){
     player.y -= player.speedY;
   }
 
-  for(let obstacle of obstacles.concat(weaponGenerators).concat(windows)){
+  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows)){
     if(player.intersects(obstacle)){
       if(player.verticalDirection == 'Up'){
         player.y = obstacle.y + obstacle.height
@@ -139,7 +142,7 @@ function movePlayer2(){
     player2.layDown()
   } else if(player2.isDown){
     player2.stayUp()
-    for(let obstacle of obstacles.concat(weaponGenerators).concat(windows)){
+    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows)){
       if(player2.intersects(obstacle)){
         player2.y += 20
         player2.layDown()
@@ -147,7 +150,7 @@ function movePlayer2(){
     }
   }
 
-  for(let obstacle of obstacles.concat(weaponGenerators).concat(windows)){
+  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows)){
     if(player2.intersects(obstacle)){
       if(player2.horizontalDirection == 'Left'){
         player2.x = obstacle.x + obstacle.width
@@ -172,7 +175,7 @@ function movePlayer2(){
     player2.y -= player2.speedY;
   }
 
-  for(let obstacle of obstacles.concat(weaponGenerators).concat(windows)){
+  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows)){
     if(player2.intersects(obstacle)){
       if(player2.verticalDirection == 'Up'){
         console.log("up")
@@ -252,6 +255,17 @@ function checkWeaponGeneratorCollisions(){
   }
 }
 
+function checkBonusesCollisions(){
+  for(let i = 0; i < bonusGenerators.length; i++){
+    if(bonusGenerators[i].stands(player)){
+      player.takeBonus(bonusGenerators[i])
+    }
+    if(bonusGenerators[i].stands(player2)){
+      player2.takeBonus(bonusGenerators[i])
+    }
+  }
+}
+
 function stop(num) {
   ctx.fillStyle = "black";
   ctx.font = "50px Arial";
@@ -283,6 +297,8 @@ function updateGameArea() {
   checkBulletCollisions()
   checkDoorColissions()
   checkWeaponGeneratorCollisions()
+  checkBonusesCollisions()
+
   if(player.x + player.width < 0 || player.x > cvs.width || player.y + player.height < 0 || player.y > cvs.height){
     stop(2)
   }
@@ -295,6 +311,7 @@ function updateGameArea() {
   doors.forEach(d => d.update());
   windows.forEach(w => w.update());
   weaponGenerators.forEach(w => w.update());
+  bonusGenerators.forEach(b => b.update());
   player.update()
   player2.update()
 
