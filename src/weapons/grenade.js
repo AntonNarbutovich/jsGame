@@ -3,7 +3,7 @@ import {gravity} from "../values.js"
 export default function Grenade(ctx) {
   this.damage = 4;
   this.ammo = 2
-  this.fireDelay = 70;
+  this.fireDelay = 50;
   this.curDelay = 0;
   this.blowDelay = 100
   this.curBlowDelay = 0

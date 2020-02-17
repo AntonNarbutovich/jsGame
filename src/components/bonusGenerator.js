@@ -1,11 +1,13 @@
 import Medicine from '../bonuses/medicine.js'
+import Shield from '../bonuses/shield.js'
+import DamageBonus from '../bonuses/damageBonus.js'
 import {bonusChance}  from "../values.js"
 
 export default function BonusGenerator(x, y, ctx) {
   this.width = 40;
   this.height = 10;
   this.color = 'green';
-  this.weapon = null;
+  this.bonus = null;
   this.x = x;
   this.y = y;
 
@@ -47,6 +49,12 @@ export default function BonusGenerator(x, y, ctx) {
     let num = Math.floor(Math.random() * (bonusChance));
     if(num == 0){
       this.bonus = new Medicine()
+    } else
+    if(num == 1){
+      this.bonus = new DamageBonus()
+    } else
+    if(num == 2){
+      this.bonus = new Shield()
     }
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);

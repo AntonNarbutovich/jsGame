@@ -5,6 +5,7 @@ import Window from "./components/window.js"
 import WeaponGenerator from "./components/weaponGenerator.js"
 import BonusGenerator from "./components/bonusGenerator.js"
 import Trampoline from "./components/trampoline.js"
+import Table from "./components/table.js"
 import Grenade from "./weapons/grenade.js"
 import {gravity, bulletSpeed} from "./values.js"
 
@@ -17,12 +18,15 @@ let weaponGenerators = []
 let windows = []
 let bonusGenerators = []
 let trampolins = []
+let tables = []
+
+let win = null
 
 const cvs = document.getElementById("game")
 const ctx = cvs.getContext("2d")
 
-let player = new Player(450, 450, ctx)
-let player2 = new Player(900, 350, ctx)
+let player = new Player(1, 450, 450, ctx)
+let player2 = new Player(2, 900, 350, ctx)
 
 obstacles.push(new Wall(100, 600, 1400, 30, ctx))
 obstacles.push(new Wall(1000, 550, 200, 30, ctx))
@@ -106,6 +110,8 @@ bonusGenerators.push(new BonusGenerator(1400, 590, ctx))
 trampolins.push(new Trampoline(1075, 490, ctx))
 trampolins.push(new Trampoline(130, 400, ctx))
 
+tables.push(new Table(630, 575, ctx))
+tables.push(new Table(930, 175, ctx))
 
 document.addEventListener('keydown', function (e) {
   pressedKeys[e.keyCode] = true;
@@ -121,21 +127,16 @@ function movePlayer(){
   if(pressedKeys[68]){
     player.moveRight()
   }
-
-  if(pressedKeys[83]){
-    player.layDown()
-  } else if(player.isDown){
-    player.stayUp()
-    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins)){
-      if(player.intersects(obstacle)){
-        player.y += 20
-        player.layDown()
+  if(pressedKeys[70]){
+    for(let table of tables){
+      if(table.closeTo(player) && table.curDelay == 0){
+        table.changeState()
       }
     }
   }
 
-  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins)){
-    if(player.intersects(obstacle)){
+  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins).concat(tables)){
+    if(obstacle.intersects(player)){
       if(player.horizontalDirection == 'Left'){
         player.x = obstacle.x + obstacle.width
       } else{
@@ -159,8 +160,8 @@ function movePlayer(){
     player.y -= player.speedY;
   }
 
-  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins)){
-    if(player.intersects(obstacle)){
+  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins).concat(tables)){
+    if(obstacle.intersects(player)){
       if(player.verticalDirection == 'Up'){
         player.y = obstacle.y + obstacle.height
         player.speedY = 0
@@ -168,6 +169,25 @@ function movePlayer(){
         player.y = obstacle.y - player.height
         player.speedY = 0
         player.jumpAllowed = true
+      }
+    }
+  }
+
+  if(pressedKeys[83]){
+    player.layDown()
+    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins).concat(tables)){
+      if(obstacle.intersects(player)){
+        player.x -= 20
+        //player.layDown()
+      }
+    }
+
+  } else if(player.isDown){
+    player.stayUp()
+    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins).concat(tables)){
+      if(obstacle.intersects(player)){
+        player.y += 20
+        player.layDown()
       }
     }
   }
@@ -180,20 +200,17 @@ function movePlayer2(){
   if(pressedKeys[39]){
     player2.moveRight()
   }
-  if(pressedKeys[40]){
-    player2.layDown()
-  } else if(player2.isDown){
-    player2.stayUp()
-    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins)){
-      if(player2.intersects(obstacle)){
-        player2.y += 20
-        player2.layDown()
+  if(pressedKeys[17]){
+    for(let table of tables){
+      if(table.closeTo(player2) && table.curDelay == 0){
+        table.changeState()
       }
     }
   }
 
-  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins)){
-    if(player2.intersects(obstacle)){
+
+  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins).concat(tables)){
+    if(obstacle.intersects(player2)){
       if(player2.horizontalDirection == 'Left'){
         player2.x = obstacle.x + obstacle.width
       } else{
@@ -217,16 +234,33 @@ function movePlayer2(){
     player2.y -= player2.speedY;
   }
 
-  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins)){
-    if(player2.intersects(obstacle)){
+  for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins).concat(tables)){
+    if(obstacle.intersects(player2)){
       if(player2.verticalDirection == 'Up'){
-        console.log("up")
         player2.y = obstacle.y + obstacle.height
         player2.speedY = 0
       } else {
         player2.y = obstacle.y - player2.height
         player2.speedY = 0
         player2.jumpAllowed = true
+      }
+    }
+  }
+
+  if(pressedKeys[40]){
+    player2.layDown()
+    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins).concat(tables)){
+      if(obstacle.intersects(player2)){
+        player2.x -= 20
+        player2.layDown()
+      }
+    }
+  } else if(player2.isDown){
+    player2.stayUp()
+    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins).concat(tables)){
+      if(obstacle.intersects(player2)){
+        player2.y += 20
+        player2.layDown()
       }
     }
   }
@@ -245,6 +279,14 @@ function checkBulletCollisions(){
         break
       }
     }
+
+    for(let j = 0; j < tables.length; j++){
+      if(tables[j].intersects(bullet)){
+        bullets.splice(i, 1)
+        break
+      }
+    }
+
     for(let j = 0; j < doors.length; j++){
       if(bullet.intersects(doors[j]) && doors[j].mode == 'closed'){
         bullets.splice(i, 1)
@@ -258,18 +300,18 @@ function checkBulletCollisions(){
     }
 
     if(bullet.intersects(player)){
-      player.health -= bullet.damage;
-      player.hitSound.play()
+      player.takeDamage(bullet.damage)
       bullets.splice(i, 1)
       if(player.health <= 0){
+        player.die()
         stop(2)
       }
     }
     if(bullet.intersects(player2)){
-      player2.health -= bullet.damage;
-      player2.hitSound.play()
+      player2.takeDamage(bullet.damage)
       bullets.splice(i, 1)
       if(player2.health <= 0){
+        player2.die()
         stop(1)
       }
     }
@@ -327,22 +369,22 @@ function checkGrenadesCollisions(){
   for(let i = 0; i < grenades.length; i++){
     grenades[i].x += grenades[i].speedX
 
-    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators)){
-      if(grenades[i].intersects(obstacle)){
+    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(tables)){
+      if(obstacle.intersects(grenades[i])){
         grenades[i].hitSound.play()
+        grenades[i].x -= grenades[i].speedX
         grenades[i].speedX = -grenades[i].speedX/2
-        grenades[i].x += grenades[i].speedX
         break;
       }
     }
 
     grenades[i].y += grenades[i].speedY
 
-    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators)){
-      if(grenades[i].intersects(obstacle)){
+    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(tables)){
+      if(obstacle.intersects(grenades[i])){
         grenades[i].hitSound.play()
+        grenades[i].y -= grenades[i].speedY
         grenades[i].speedY = -grenades[i].speedY/2
-        grenades[i].y += grenades[i].speedY
         break;
       }
     }
@@ -365,9 +407,14 @@ function checkGrenadesCollisions(){
 }
 
 function stop(num) {
-  ctx.fillStyle = "black";
-  ctx.font = "50px Arial";
-  ctx.fillText("Game Over Player " + num + " Wins", 500, 300);
+  win = num
+  setTimeout(clear, 100)
+}
+
+function clear(){
+  ctx.fillStyle = "red";
+  ctx.font = "100px Arial";
+  ctx.fillText("Game Over Player " + win + " Wins", 200, 300);
   clearInterval(interval);
 }
 
@@ -422,6 +469,8 @@ function updateGameArea() {
   weaponGenerators.forEach(w => w.update());
   bonusGenerators.forEach(b => b.update());
   trampolins.forEach(t => t.update());
+  tables.forEach(t => t.update());
+
   player.update()
   player2.update()
 
@@ -456,6 +505,15 @@ function updateGameArea() {
         }
       }
       grenades.splice(i, 1)
+    }
+  }
+
+  for(let table of tables){
+    if(table.curDelay > 0){
+      table.curDelay += 1
+      if(table.curDelay >= table.delay){
+        table.curDelay = 0
+      }
     }
   }
 
