@@ -3,19 +3,22 @@ import Bullet from "./bullet.js"
 import Grenade from "../weapons/grenade.js"
 
 export default function Player(num, x, y, ctx) {
-  this.num = num;
-  this.width = 30;
-  this.height = 50;
-  this.speedX = 4;
-  this.speedY = 0;
-  this.color = 'red';
-  this.health = 5;
-  this.shield = 0;
+  this.num = num
+  this.width = 30
+  this.height = 50
+  this.speedX = 5
+  this.speedY = 0
+  this.color = 'red'
+  this.health = 5
+  this.shield = 0
   this.jumpAllowed = true;
   this.horizontalDirection = 'Right'
   this.hitSound = new Audio("audio/hit.mp3")
   this.hitSound.volume = 0.2
-  this.weapon = null;
+  this.weapon = null
+  this.grenades = 0
+  this.grenadesDelay = 50
+  this.grenadesCurDelay = 0
   this.isDown = false
   this.additionalDamage = 0
   this.x = x;
@@ -28,7 +31,11 @@ export default function Player(num, x, y, ctx) {
   this.takeWeapon = function(generator){
     if(generator.weapon){
       generator.weapon.takeSound.play()
-      this.weapon = {...generator.weapon}
+      if(generator.weapon.grenade){
+        this.grenades += generator.weapon.ammo
+      } else {
+        this.weapon = {...generator.weapon}
+      }
       generator.weapon = null
     }
   }
@@ -65,7 +72,7 @@ export default function Player(num, x, y, ctx) {
             g.speedX = grenadeSpeed
             return g
           }
-          return new Bullet(this.x + this.width + 5, this.y + this.height/2, bulletSpeed, damage, ctx)
+          return new Bullet(this.x + this.width + 2, this.y + this.height/2, bulletSpeed, damage, ctx)
         } else {
           if(grenade){
             let g = new Grenade(ctx)
@@ -74,8 +81,29 @@ export default function Player(num, x, y, ctx) {
             g.speedX = -grenadeSpeed
             return g
           }
-          return new Bullet(this.x - 5, this.y + this.height/2, -bulletSpeed, damage, ctx)
+          return new Bullet(this.x - 2, this.y + this.height/2, -bulletSpeed, damage, ctx)
         }
+      }
+    }
+  }
+
+  this.throwGrenade = function(){
+    if(this.grenades > 0 && this.grenadesCurDelay == 0){
+      this.grenadesCurDelay = 1
+      let g = new Grenade(ctx)
+      g.x = this.x
+      g.y = this.y
+      g.fireSound.pause();
+      g.fireSound.currentTime = 0;
+      g.fireSound.play()
+      let damage = g.damage + this.additionalDamage
+      this.grenades--
+      if(this.horizontalDirection == 'Right'){
+          g.speedX = grenadeSpeed
+          return g
+      } else {
+          g.speedX = -grenadeSpeed
+          return g
       }
     }
   }
@@ -171,8 +199,14 @@ export default function Player(num, x, y, ctx) {
           this.weapon.curDelay = 0
         }
       }
-      ctx.fillStyle = "black";
-      ctx.fillText(this.weapon.ammo, this.x + 40, this.y - 10);
+      //ctx.fillStyle = "black";
+      //ctx.fillText(this.weapon.ammo, this.x + 40, this.y - 10);
+    }
+    if(this.grenadesCurDelay > 0){
+      this.grenadesCurDelay++
+      if(this.grenadesCurDelay == this.grenadesDelay){
+        this.grenadesCurDelay = 0
+      }
     }
 
     ctx.fillStyle = "red";

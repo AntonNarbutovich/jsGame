@@ -59,7 +59,8 @@ export default function BonusGenerator(x, y, ctx) {
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
     if(this.bonus){
-      ctx.drawImage(this.bonus.image, this.x, this.y - 20, 30, 15);
+      let height = 30 * this.bonus.image.height/this.bonus.image.width
+      ctx.drawImage(this.bonus.image, this.x + 5, this.y - height, 30, height);
     }
   }
 }

@@ -62,7 +62,8 @@ export default function WeaponGenerator(x, y, ctx) {
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
     if(this.weapon){
-      ctx.drawImage(this.weapon.image, this.x, this.y - 20, 30, 8);
+      let height = 30 * this.weapon.image.height/this.weapon.image.width
+      ctx.drawImage(this.weapon.image, this.x + 5, this.y - height, 30, height);
     }
   }
 }

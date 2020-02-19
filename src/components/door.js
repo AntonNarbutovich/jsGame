@@ -29,7 +29,7 @@ export default function Door(x, y, ctx) {
     let objTopSide = obj.y
     let objBottomSide = obj.y + obj.height
 
-    if((bottomSide <= objTopSide) || (topSide >= objBottomSide) || (rightSide <= objLeftSide) || (leftSide >= objRightSide)){
+    if((this.mode == 'opened') || (bottomSide <= objTopSide) || (topSide >= objBottomSide) || (rightSide <= objLeftSide) || (leftSide >= objRightSide)){
       return false
     }
     return true
