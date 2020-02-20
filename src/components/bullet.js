@@ -1,13 +1,14 @@
 import {gravity, bulletSpeed} from "../values.js"
 
-export default function Bullet(x, y, speed, damage, ctx) {
+export default function Bullet(x, y, speedX, speedY, damage, ctx) {
   this.width = 2;
   this.height = 2;
   this.color = "black";
   this.damage = damage;
   this.x = x;
   this.y = y;
-  this.speedX = speed;
+  this.speedX = speedX;
+  this.speedY = speedY;
 
   this.intersects = function(obj){
     let leftSide = this.x
@@ -28,14 +29,14 @@ export default function Bullet(x, y, speed, damage, ctx) {
 
   this.update = function(){
     this.x += this.speedX
-    this.y += gravity/2
+    this.y += this.speedY + gravity/2
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
   }
 
   this.update = function(speed){
     this.x += speed
-    this.y += gravity/(2*this.speedX/speed)
+    this.y += this.speedY/speedX + gravity/(2*this.speedX/speed)
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
   }

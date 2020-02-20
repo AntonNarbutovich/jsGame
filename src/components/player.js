@@ -60,28 +60,26 @@ export default function Player(num, x, y, ctx) {
         this.weapon.fireSound.play()
         this.weapon.ammo--
         let damage = this.weapon.damage + this.additionalDamage
-        let grenade = this.weapon.grenade
+        let shotgun = this.weapon.shotgun
         if(this.weapon.ammo == 0){
           this.weapon = null
         }
         if(this.horizontalDirection == 'Right'){
-          if(grenade){
-            let g = new Grenade(ctx)
-            g.x = this.x
-            g.y = this.y
-            g.speedX = grenadeSpeed
-            return g
+          if(shotgun){
+            let bul1 = new Bullet(this.x + this.width + 2, this.y + this.height/2, bulletSpeed, 15 , damage, ctx)
+            let bul2 = new Bullet(this.x + this.width + 2, this.y + this.height/2, bulletSpeed, 0 , damage, ctx)
+            let bul3 = new Bullet(this.x + this.width + 2, this.y + this.height/2, bulletSpeed, -15 , damage, ctx)
+            return [bul1, bul2, bul3]
           }
-          return new Bullet(this.x + this.width + 2, this.y + this.height/2, bulletSpeed, damage, ctx)
+          return [new Bullet(this.x + this.width + 2, this.y + this.height/2, bulletSpeed, 0 , damage, ctx)]
         } else {
-          if(grenade){
-            let g = new Grenade(ctx)
-            g.x = this.x
-            g.y = this.y
-            g.speedX = -grenadeSpeed
-            return g
+          if(shotgun){
+            let bul1 = new Bullet(this.x - 2, this.y + this.height/2, -bulletSpeed, 15 , damage, ctx)
+            let bul2 = new Bullet(this.x - 2, this.y + this.height/2, -bulletSpeed, 0 , damage, ctx)
+            let bul3 = new Bullet(this.x - 2, this.y + this.height/2, -bulletSpeed, -15 , damage, ctx)
+            return [bul1, bul2, bul3]
           }
-          return new Bullet(this.x - 2, this.y + this.height/2, -bulletSpeed, damage, ctx)
+          return [new Bullet(this.x - 2, this.y + this.height/2, -bulletSpeed, 0, damage, ctx)]
         }
       }
     }

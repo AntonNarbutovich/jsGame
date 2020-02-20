@@ -1,21 +1,22 @@
-import Player from "./components/player.js"
-import Wall from "./components/wall.js"
-import FrontWall from "./components/frontWall.js"
-import Door from "./components/door.js"
-import SteelDoor from "./components/steelDoor.js"
-import Window from "./components/window.js"
-import WeaponGenerator from "./components/weaponGenerator.js"
-import BonusGenerator from "./components/bonusGenerator.js"
-import Trampoline from "./components/trampoline.js"
-import Table from "./components/table.js"
 import Grenade from "./weapons/grenade.js"
+import buildLevel from "./levels/levels.js"
 import {gravity, bulletSpeed, grenadeImage, strengthImage} from "./values.js"
 
+let interval = null
+
+let player1Wins = 0
+let player2Wins = 0
+
 let pressedKeys = []
-let obstacles = []
-let frontWalls = []
 let bullets = []
 let grenades = []
+let win = null
+
+let player = []
+let player2 = []
+
+let obstacles = []
+let frontWalls = []
 let doors = []
 let steelDoors = []
 let weaponGenerators = []
@@ -23,116 +24,11 @@ let windows = []
 let bonusGenerators = []
 let trampolins = []
 let tables = []
-
-let win = null
+let backgroundImage = []
 
 const cvs = document.getElementById("game")
 const ctx = cvs.getContext("2d")
 
-let player = new Player(1, 450, 450, ctx)
-let player2 = new Player(2, 900, 350, ctx)
-
-obstacles.push(new Wall(100, 600, 1400, 30, ctx))
-obstacles.push(new Wall(1000, 550, 200, 30, ctx))
-obstacles.push(new Wall(1050, 500, 100, 30, ctx))
-obstacles.push(new Wall(1300, 550, 100, 50, ctx))
-obstacles.push(new Wall(1300, 420, 100, 50, ctx))
-obstacles.push(new Wall(1470, 480, 40, 30, ctx))
-
-obstacles.push(new Wall(100, 30, 30, 130, ctx))
-obstacles.push(new Wall(100, 200, 30, 400, ctx))
-obstacles.push(new Wall(100, 535, 80, 10, ctx))
-obstacles.push(new Wall(100, 410, 80, 10, ctx))
-obstacles.push(new Wall(250, 500, 50, 10, ctx))
-obstacles.push(new Wall(280, 450, 50, 10, ctx))
-obstacles.push(new Wall(100, 400, 30, 200, ctx))
-
-//obstacles.push(new Wall(100, 400, 220, 30, ctx))
-obstacles.push(new Wall(300, 400, 30, 145, ctx))
-obstacles.push(new Wall(400, 450, 230, 30, ctx))
-obstacles.push(new Wall(700, 450, 270, 30, ctx))
-
-obstacles.push(new Wall(300, 390, 70, 30, ctx))
-obstacles.push(new Wall(400, 325, 650, 10, ctx))
-obstacles.push(new Wall(1150, 325, 400, 10, ctx))
-obstacles.push(new Wall(1400, 290, 150, 35, ctx))
-obstacles.push(new Wall(1450, 255, 100, 35, ctx))
-obstacles.push(new Wall(800, 200, 600, 10, ctx))
-obstacles.push(new Wall(1250, 200, 10, 85, ctx))
-obstacles.push(new Wall(470, 260, 30, 10, ctx))
-obstacles.push(new Wall(200, 200, 230, 10, ctx))
-
-obstacles.push(new Wall(500, 200, 320, 10, ctx))
-obstacles.push(new Wall(500, 200, 30, 70, ctx))
-obstacles.push(new Wall(790, 200, 30, 70, ctx))
-obstacles.push(new Wall(630, 300, 60, 30, ctx))
-
-obstacles.push(new Wall(300, 200, 30, 150, ctx))
-
-obstacles.push(new Wall(500, 50, 300, 10, ctx))
-obstacles.push(new Wall(500, 0, 10, 120, ctx))
-obstacles.push(new Wall(600, 0, 10, 120, ctx))
-obstacles.push(new Wall(700, 0, 10, 120, ctx))
-obstacles.push(new Wall(800, 0, 10, 120, ctx))
-
-obstacles.push(new Wall(1100, 0, 10, 150, ctx))
-
-obstacles.push(new Wall(100, 0, 340, 30, ctx))
-
-frontWalls.push(new FrontWall(200, 30, 40, 160, ctx))
-frontWalls.push(new FrontWall(300, 30, 40, 160, ctx))
-frontWalls.push(new FrontWall(400, 30, 40, 160, ctx))
-
-frontWalls.push(new FrontWall(850, 210, 10, 115, ctx))
-frontWalls.push(new FrontWall(900, 210, 10, 115, ctx))
-frontWalls.push(new FrontWall(950, 210, 10, 115, ctx))
-frontWalls.push(new FrontWall(1000, 210, 10, 115, ctx))
-
-
-doors.push(new Door(310, 545, ctx))
-
-doors.push(new Door(510, 270, ctx))
-doors.push(new Door(800, 270, ctx))
-
-doors.push(new Door(1100, 145, ctx))
-
-//steelDoors.push(new SteelDoor(400, 545, ctx))
-
-
-windows.push(new Window(100, 160, ctx))
-windows.push(new Window(1300, 470, ctx))
-windows.push(new Window(1300, 510, ctx))
-windows.push(new Window(300, 350, ctx))
-
-windows.push(new Window(500, 160, ctx))
-windows.push(new Window(600, 160, ctx))
-windows.push(new Window(700, 160, ctx))
-windows.push(new Window(800, 160, ctx))
-windows.push(new Window(500, 120, ctx))
-windows.push(new Window(600, 120, ctx))
-windows.push(new Window(700, 120, ctx))
-windows.push(new Window(800, 120, ctx))
-
-
-weaponGenerators.push(new WeaponGenerator(800, 590, ctx))
-weaponGenerators.push(new WeaponGenerator(500, 440, ctx))
-weaponGenerators.push(new WeaponGenerator(640, 290, ctx))
-weaponGenerators.push(new WeaponGenerator(1150, 190, ctx))
-
-
-bonusGenerators.push(new BonusGenerator(640, 190, ctx))
-bonusGenerators.push(new BonusGenerator(1400, 590, ctx))
-
-trampolins.push(new Trampoline(1075, 490, ctx))
-trampolins.push(new Trampoline(130, 400, ctx))
-
-tables.push(new Table(630, 575, ctx))
-tables.push(new Table(930, 175, ctx))
-
-let music = new Audio("audio/backgroundMusic.mp3")
-music.volume = 0.2
-music.loop = true
-//music.play()
 
 document.addEventListener('keydown', function (e) {
   pressedKeys[e.keyCode] = true;
@@ -140,6 +36,38 @@ document.addEventListener('keydown', function (e) {
 document.addEventListener('keyup', function (e) {
   pressedKeys[e.keyCode] = false;
 })
+
+function newGame(level){
+  pressedKeys = []
+  bullets = []
+  grenades = []
+  win = null
+
+  let objects = buildLevel(level, ctx)
+
+  player = objects[0]
+  player2 = objects[1]
+
+  obstacles = objects[2]
+  frontWalls = objects[3]
+  doors = objects[4]
+  steelDoors = objects[5]
+  weaponGenerators = objects[6]
+  windows = objects[7]
+  bonusGenerators = objects[8]
+  trampolins = objects[9]
+  tables = objects[10]
+  backgroundImage = objects[11]
+
+
+  let music = new Audio("audio/backgroundMusic.mp3")
+  music.volume = 0.2
+  music.loop = true
+  //music.play()
+
+  clearInterval(interval);
+  interval = setInterval(updateGameArea, 20);
+}
 
 function movePlayer(){
   if(pressedKeys[65]){
@@ -160,7 +88,7 @@ function movePlayer(){
   if(pressedKeys[32]){
     let bullet = player.fire()
     if(bullet){
-      bullets.push(bullet)
+      bullets = bullets.concat(bullet)
     }
   }
 
@@ -433,109 +361,6 @@ function checkGrenadesCollisions(){
       }
     }
   }
-}
-
-function drawPlayerInterface(){
-  ctx.fillStyle = 'black'
-  ctx.fillRect(0, cvs.height - 60, 300, 60)
-
-  ctx.fillStyle = 'white'
-  ctx.fillRect(5, cvs.height - 55, 290, 50)
-
-  ctx.fillStyle = 'black'
-  ctx.fillRect(100, cvs.height - 60, 5, 60)
-  ctx.fillRect(200, cvs.height - 60, 5, 60)
-
-  ctx.font = "20px Arial";
-  if(player.weapon){
-    ctx.drawImage(player.weapon.image, 10, cvs.height - 50, 50, 40);
-    ctx.fillText(player.weapon.ammo, 70, cvs.height - 25);
-  }
-
-  ctx.drawImage(grenadeImage, 110, cvs.height - 50, 40, 40);
-  ctx.fillText(player.grenades, 160, cvs.height - 25);
-
-  ctx.drawImage(strengthImage, 210, cvs.height - 50, 40, 40);
-  ctx.fillText(player.additionalDamage, 260, cvs.height - 25);
-
-/////////
-
-  ctx.fillStyle = 'black'
-  ctx.fillRect(cvs.width - 300, cvs.height - 60, 300, 60)
-
-  ctx.fillStyle = 'white'
-  ctx.fillRect(cvs.width - 295, cvs.height - 55, 290, 50)
-
-  ctx.fillStyle = 'black'
-  ctx.fillRect(cvs.width - 100, cvs.height - 60, 5, 60)
-  ctx.fillRect(cvs.width - 200, cvs.height - 60, 5, 60)
-
-  ctx.font = "20px Arial";
-  if(player2.weapon){
-    ctx.drawImage(player2.weapon.image, cvs.width - 290, cvs.height - 50, 50, 40);
-    ctx.fillText(player2.weapon.ammo, cvs.width - 230, cvs.height - 25);
-  }
-
-  ctx.drawImage(grenadeImage, cvs.width - 190, cvs.height - 50, 40, 40);
-  ctx.fillText(player2.grenades, cvs.width - 140, cvs.height - 25);
-
-  ctx.drawImage(strengthImage, cvs.width - 90, cvs.height - 50, 40, 40);
-  ctx.fillText(player2.additionalDamage, cvs.width - 40, cvs.height - 25);
-}
-
-function stop(num) {
-  win = num
-  setTimeout(clear, 100)
-}
-
-function clear(){
-  ctx.fillStyle = "red";
-  ctx.font = "100px Arial";
-  ctx.fillText("Game Over Player " + win + " Wins", 200, 300);
-  clearInterval(interval);
-}
-
-function updateGameArea() {
-  ctx.clearRect(0, 0, cvs.width, cvs.height);
-
-  movePlayer()
-
-  movePlayer2()
-
-  checkBulletCollisions()
-  checkDoorColissions()
-  checkWeaponGeneratorCollisions()
-  checkBonusesCollisions()
-  checkGrenadesCollisions()
-  checkTrampolineCollisions()
-
-  if(player.x + player.width < 0 || player.x > cvs.width || player.y + player.height < 0 || player.y > cvs.height){
-    stop(2)
-  }
-
-  if(player2.x + player2.width < 0 || player2.x > cvs.width || player2.y + player2.height < 0 || player2.y > cvs.height){
-    stop(1)
-  }
-
-  obstacles.forEach(o => o.update());
-  doors.forEach(d => d.update());
-  steelDoors.forEach(d => d.update());
-  windows.forEach(w => w.update());
-  grenades.forEach(g => g.update());
-  weaponGenerators.forEach(w => w.update());
-  bonusGenerators.forEach(b => b.update());
-  trampolins.forEach(t => t.update());
-  tables.forEach(t => t.update());
-
-  player.update()
-  player2.update()
-
-  frontWalls.forEach(w => w.update())
-
-  for(let i = 0; i < Math.abs(bulletSpeed/5); i++){
-    bullets.forEach(b => b.update(Math.sign(b.speedX)*5));
-    checkBulletCollisions()
-  }
 
   for(let i = 0; i < grenades.length; i++){
     if(grenades[i].curBlowDelay >= grenades[i].blowDelay){
@@ -565,7 +390,9 @@ function updateGameArea() {
       grenades.splice(i, 1)
     }
   }
+}
 
+function checkTableCollisions(){
   for(let table of tables.concat(steelDoors)){
     if(table.curDelay > 0){
       table.curDelay += 1
@@ -574,8 +401,135 @@ function updateGameArea() {
       }
     }
   }
+}
+
+function drawPlayerInterface(){
+  ctx.fillStyle = 'black'
+  ctx.fillRect(0, cvs.height - 60, 300, 60)
+
+  ctx.fillStyle = 'white'
+  ctx.fillRect(5, cvs.height - 55, 290, 50)
+
+  ctx.fillStyle = 'black'
+  ctx.fillRect(100, cvs.height - 60, 5, 60)
+  ctx.fillRect(200, cvs.height - 60, 5, 60)
+
+  ctx.font = "20px Arial";
+  if(player.weapon){
+    ctx.drawImage(player.weapon.image, 10, cvs.height - 50, 50, 40);
+    ctx.fillText(player.weapon.ammo, 70, cvs.height - 25);
+  }
+
+  ctx.drawImage(grenadeImage, 110, cvs.height - 50, 40, 40);
+  ctx.fillText(player.grenades, 160, cvs.height - 25);
+
+  ctx.drawImage(strengthImage, 210, cvs.height - 50, 40, 40);
+  ctx.fillText(player.additionalDamage, 260, cvs.height - 25);
+
+  ctx.font = "50px Arial";
+  ctx.fillText(player1Wins, 310, cvs.height - 15);
+
+
+/////////
+
+  ctx.fillStyle = 'black'
+  ctx.fillRect(cvs.width - 300, cvs.height - 60, 300, 60)
+
+  ctx.fillStyle = 'white'
+  ctx.fillRect(cvs.width - 295, cvs.height - 55, 290, 50)
+
+  ctx.fillStyle = 'black'
+  ctx.fillRect(cvs.width - 100, cvs.height - 60, 5, 60)
+  ctx.fillRect(cvs.width - 200, cvs.height - 60, 5, 60)
+
+  ctx.font = "20px Arial";
+  if(player2.weapon){
+    ctx.drawImage(player2.weapon.image, cvs.width - 290, cvs.height - 50, 50, 40);
+    ctx.fillText(player2.weapon.ammo, cvs.width - 230, cvs.height - 25);
+  }
+
+  ctx.drawImage(grenadeImage, cvs.width - 190, cvs.height - 50, 40, 40);
+  ctx.fillText(player2.grenades, cvs.width - 140, cvs.height - 25);
+
+  ctx.drawImage(strengthImage, cvs.width - 90, cvs.height - 50, 40, 40);
+  ctx.fillText(player2.additionalDamage, cvs.width - 40, cvs.height - 25);
+
+  ctx.font = "50px Arial";
+  ctx.fillText(player2Wins, cvs.width - 340, cvs.height - 15);
+}
+
+function stop(num) {
+  win = num
+  switch (num) {
+    case 1:
+      player1Wins++
+      break;
+    case 2:
+      player2Wins++
+      break;
+
+  }
+  setTimeout(clear, 100)
+}
+
+function clear(){
+  ctx.fillStyle = "red";
+  ctx.font = "100px Arial";
+  ctx.fillText("Game Over Player " + win + " Wins", 200, 300);
+  clearInterval(interval);
+  interval = setInterval(restart, 20);
+}
+
+function restart(){
+  if(pressedKeys[82]){
+    newGame(1)
+  }
+}
+
+function updateGameArea() {
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+  ctx.drawImage(backgroundImage, 0, 0, cvs.width, cvs.height)
+
+  movePlayer()
+  movePlayer2()
+
+  checkBulletCollisions()
+  checkDoorColissions()
+  checkWeaponGeneratorCollisions()
+  checkBonusesCollisions()
+  checkGrenadesCollisions()
+  checkTrampolineCollisions()
+  checkTableCollisions()
+
+  if(player.x + player.width < 0 || player.x > cvs.width || player.y + player.height < 0 || player.y > cvs.height){
+    stop(2)
+  }
+
+  if(player2.x + player2.width < 0 || player2.x > cvs.width || player2.y + player2.height < 0 || player2.y > cvs.height){
+    stop(1)
+  }
+
+  obstacles.forEach(o => o.update());
+  doors.forEach(d => d.update());
+  steelDoors.forEach(d => d.update());
+  windows.forEach(w => w.update());
+  grenades.forEach(g => g.update());
+  weaponGenerators.forEach(w => w.update());
+  bonusGenerators.forEach(b => b.update());
+  trampolins.forEach(t => t.update());
+  tables.forEach(t => t.update());
+
+  player.update()
+  player2.update()
+
+  frontWalls.forEach(w => w.update())
+
+  for(let i = 0; i < Math.abs(bulletSpeed/5); i++){
+    bullets.forEach(b => b.update(Math.sign(b.speedX)*5));
+    checkBulletCollisions()
+  }
 
   drawPlayerInterface()
 }
 
-let interval = setInterval(updateGameArea, 20);
+newGame(1)
