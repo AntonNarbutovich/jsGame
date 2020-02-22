@@ -3,6 +3,7 @@ import buildLevel from "./levels/levels.js"
 import {gravity, bulletSpeed, grenadeImage, strengthImage} from "./values.js"
 
 let interval = null
+let curLevel = 1
 
 let player1Wins = 0
 let player2Wins = 0
@@ -14,6 +15,8 @@ let win = null
 
 let player = []
 let player2 = []
+
+let enemies = []
 
 let obstacles = []
 let frontWalls = []
@@ -37,6 +40,51 @@ document.addEventListener('keyup', function (e) {
   pressedKeys[e.keyCode] = false;
 })
 
+function openMenu(){
+  clearInterval(interval)
+  interval = setInterval(menu, 20);
+}
+
+function menu(){
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+  if(pressedKeys[38]){
+    if(curLevel > 1){
+      curLevel--
+    } else {
+      curLevel = 2
+    }
+    pressedKeys[38] = false
+  }
+
+  if(pressedKeys[40]){
+    if(curLevel < 2){
+      curLevel++
+    } else {
+      curLevel = 1
+    }
+    pressedKeys[40] = false
+  }
+
+  if(pressedKeys[13]){
+    newGame(curLevel)
+  }
+
+  ctx.font = "30px Arial";
+  ctx.fillStyle = "black";
+
+  for(let i = 1; i < 3; i++){
+    if(curLevel === i){
+      ctx.beginPath();
+      ctx.rect(cvs.width/2 - 100, cvs.height/2 - 200 + i*100, 200, 50)
+      ctx.stroke();
+    }
+    ctx.fillText('Level ' + i, cvs.width/2 - 50, cvs.height/2 - 165 + i*100);
+  }
+
+
+}
+
 function newGame(level){
   pressedKeys = []
   bullets = []
@@ -57,7 +105,8 @@ function newGame(level){
   bonusGenerators = objects[8]
   trampolins = objects[9]
   tables = objects[10]
-  backgroundImage = objects[11]
+  enemies = objects[11]
+  backgroundImage = objects[12]
 
 
   let music = new Audio("audio/backgroundMusic.mp3")
@@ -175,7 +224,7 @@ function movePlayer2(){
  if(pressedKeys[16]){
     let bullet = player2.fire()
     if(bullet){
-      bullets.push(bullet)
+      bullets = bullets.concat(bullet)
     }
   }
 
@@ -243,6 +292,42 @@ function movePlayer2(){
   }
 }
 
+function moveEnemies(){
+  for(let enemy of enemies){
+    let bullet = enemy.findAndAttackPlayer(player, obstacles.concat(doors).concat(tables))
+
+    if(bullet){
+      bullets = bullets.concat(bullet)
+    }
+
+    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins).concat(tables).concat(steelDoors)){
+      if(obstacle.intersects(enemy)){
+        if(enemy.horizontalDirection == 'Left'){
+          enemy.x = obstacle.x + obstacle.width
+        } else{
+          enemy.x = obstacle.x - enemy.width
+        }
+      }
+    }
+
+    enemy.speedY -= gravity
+    enemy.y -= enemy.speedY;
+
+    for(let obstacle of obstacles.concat(weaponGenerators).concat(bonusGenerators).concat(windows).concat(trampolins).concat(tables).concat(steelDoors)){
+      if(obstacle.intersects(enemy)){
+        if(enemy.verticalDirection == 'Up'){
+          enemy.y = obstacle.y + obstacle.height
+          enemy.speedY = 0
+        } else {
+          enemy.y = obstacle.y - enemy.height
+          enemy.speedY = 0
+          enemy.jumpAllowed = true
+        }
+      }
+    }
+  }
+}
+
 function checkBulletCollisions(){
   for(let i = 0; i < bullets.length; i++){
     let bullet = bullets[i]
@@ -261,6 +346,17 @@ function checkBulletCollisions(){
       if(bullet.intersects(windows[j])){
         windows[j].break()
         windows.splice(j, 1)
+      }
+    }
+
+    for(let j = 0; j < enemies.length; j++){
+      if(bullet.intersects(enemies[j])){
+        enemies[j].takeDamage(bullet.damage)
+        bullets.splice(i, 1)
+        if(enemies[j].health <= 0){
+          enemies[j].die()
+          enemies.splice(j, 1)
+        }
       }
     }
 
@@ -482,7 +578,7 @@ function clear(){
 
 function restart(){
   if(pressedKeys[82]){
-    newGame(1)
+    newGame(curLevel)
   }
 }
 
@@ -490,8 +586,14 @@ function updateGameArea() {
   ctx.clearRect(0, 0, cvs.width, cvs.height);
   ctx.drawImage(backgroundImage, 0, 0, cvs.width, cvs.height)
 
+  if(pressedKeys[27]){
+    openMenu()
+  }
+
   movePlayer()
   movePlayer2()
+
+  moveEnemies()
 
   checkBulletCollisions()
   checkDoorColissions()
@@ -503,10 +605,12 @@ function updateGameArea() {
 
   if(player.x + player.width < 0 || player.x > cvs.width || player.y + player.height < 0 || player.y > cvs.height){
     stop(2)
+    clearInterval(interval)
   }
 
   if(player2.x + player2.width < 0 || player2.x > cvs.width || player2.y + player2.height < 0 || player2.y > cvs.height){
     stop(1)
+    clearInterval(interval)
   }
 
   obstacles.forEach(o => o.update());
@@ -518,6 +622,8 @@ function updateGameArea() {
   bonusGenerators.forEach(b => b.update());
   trampolins.forEach(t => t.update());
   tables.forEach(t => t.update());
+  enemies.forEach(e => e.update());
+
 
   player.update()
   player2.update()
@@ -532,4 +638,4 @@ function updateGameArea() {
   drawPlayerInterface()
 }
 
-newGame(1)
+interval = setInterval(menu, 20);

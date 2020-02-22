@@ -8,6 +8,7 @@ import BonusGenerator from "../components/bonusGenerator.js"
 import Trampoline from "../components/trampoline.js"
 import Table from "../components/table.js"
 import Player from "../components/player.js"
+import Enemy from "../enemies/enemy.js"
 
 
 export default function level1(ctx){
@@ -20,12 +21,18 @@ export default function level1(ctx){
   let bonusGenerators = []
   let trampolins = []
   let tables = []
+  let enemies = []
+
 
   let backgroundImage = new Image()
   backgroundImage.src = 'img/background.png'
 
   let player1 = new Player(1, 450, 450, ctx)
   let player2 = new Player(2, 900, 350, ctx)
+
+  //enemies.push(new Enemy(800, 500, ctx))
+  //enemies.push(new Enemy(800, 100, ctx))
+
 
   obstacles.push(new Wall(100, 600, 1400, 30, ctx))
   obstacles.push(new Wall(1000, 550, 200, 30, ctx))
@@ -124,5 +131,5 @@ export default function level1(ctx){
   tables.push(new Table(630, 575, ctx))
   tables.push(new Table(930, 175, ctx))
 
-  return [player1, player2, obstacles, frontWalls, doors, steelDoors, weaponGenerators, windows, bonusGenerators, trampolins, tables, backgroundImage]
+  return [player1, player2, obstacles, frontWalls, doors, steelDoors, weaponGenerators, windows, bonusGenerators, trampolins, tables, enemies, backgroundImage]
 }
